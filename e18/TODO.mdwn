@@ -1,0 +1,6 @@
+# ToDo
+* Some error handling would be nice
+* Add support for arguments to specify whether you want to build core or apps (and which apps).
+* Hide the building and display status information, like easyefl.sh
+* Merge build-e18.sh and build-e18-apps.sh into one script.
+* Generally make it useable for people other than myself
