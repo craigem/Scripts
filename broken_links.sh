@@ -28,7 +28,7 @@ while read url ; do
 	case $STATUS_CODE in
 		#404) echo "$url returned $STATUS_CODE : Not Found" ;;
 		# Add the 404 URLs to the list of still broken URLs
-		404) echo $url > $broken ;;
+		404) echo $url >> $broken ;;
 	esac
 	index=$(($index+1))
 done < $urls
