@@ -11,8 +11,8 @@
 # Best of luck!
 
 set -e
-# Where is the srouce code?
-SRCPATH="/home/cmcwhirt/Documents/e18"
+# Where is the source code?
+SRCPATH="/home/craige/git/e18"
 # My quick and dirty dev install location
 PREFIX="/opt/e18"
 APPS=(
