@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# This script uses virsh and arp to determince the IP address of a VM
+# This script uses virsh and arp to determine the IP address of a VM
 
 # Where are your tools?
 virsh=/usr/bin/virsh
@@ -11,7 +11,7 @@ sed=/bin/sed
 # Get the VM name as an argument:
 VM_NAME=$1
 
-# Ensure the defaul URI is set for your environment:
+# Ensure the default URI is set for your environment:
 export LIBVIRT_DEFAULT_URI=qemu:///system
 
 # Obtain the MAC address from libvirt:
