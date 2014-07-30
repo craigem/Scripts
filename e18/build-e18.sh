@@ -10,7 +10,7 @@
 # It also installs and builds everything into /opt/e18
 # Best of luck!
 
-set -eu
+#set -eu
 # Where is the source code?
 SRCPATH="/home/craige/git/e18"
 # My quick and dirty dev install location
