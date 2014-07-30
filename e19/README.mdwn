@@ -1,0 +1,6 @@
+# About
+These files are a collection of nasty hacks that allow me to rapidly update Enlightenment 18 form source and build it when I need to.
+
+There is is no error control, there are significant assumtions, such as you have a suitable build environment already and all the dependencies are installed.
+
+Good luck!
