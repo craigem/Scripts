@@ -35,7 +35,7 @@ libasound2-dev
 libpoppler-dev
 libraw-dev
 libgstreamer1.0-dev
-libxine-dev
+libxine2-dev
 libvlc-dev
 libluajit-5.1-dev
 libwebp-dev
