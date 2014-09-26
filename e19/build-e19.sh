@@ -12,7 +12,7 @@
 
 #set -eu
 # Where is the source code?
-SRCPATH="/home/craige/git/e19"
+SRCPATH="/home/craige/git/e19/core"
 # My quick and dirty dev install location
 PREFIX="/opt/e19"
 CORE=(
