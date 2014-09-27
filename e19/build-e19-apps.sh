@@ -12,9 +12,9 @@
 
 set -e
 # Where is the source code?
-SRCPATH="/home/craige/git/e18"
+SRCPATH="/home/craige/git/e19/apps"
 # My quick and dirty dev install location
-PREFIX="/opt/e18"
+PREFIX="/opt/e19"
 APPS=(
 	terminology
 	)
