@@ -51,3 +51,5 @@ libblkid-dev
 liblua5.2-dev
 libgstreamer-plugins-base0.10-dev
 libpam0g-dev
+gettext
+# add build path /opt/e19/lib to /etc/ld.so.conf.d/e19.conf
