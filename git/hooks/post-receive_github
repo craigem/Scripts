@@ -1,0 +1,7 @@
+#!/bin/bash
+
+for remote in $(git remote); do
+        if [ "$(git config "remote.${remote}.autopush")" = "true" ]; then
+                git push "$remote"
+        fi
+done
