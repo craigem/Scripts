@@ -38,22 +38,22 @@ LICENSE=/usr/share/common-licenses/GPL
 
 # Build the local git repo:
 echo "Creating the local directory."
-cd $GITDIR && /bin/mkdir $REPO && cd $GITDIR/$REPO
+cd "$GITDIR" && /bin/mkdir "$REPO" && cd "$GITDIR"/"$REPO"
 
 echo "Initialising the local repo:"
 $GIT init
 
 echo "Creating git descriptoin file."
-echo $DESCRIPTION > .git/description
+echo "$DESCRIPTION" > .git/description
 
 echo "Copying License:"
-/bin/cp $LICENSE $GITDIR/$REPO/LICENSE
+/bin/cp $LICENSE "$GITDIR"/"$REPO"/LICENSE
 $GIT add ./LICENSE
 $GIT commit -m "Added LICENSE."
 
 echo "Adding README."
 echo # README for $REPO > README.mdwn
-echo This is the initial README for the $REPO git repo. >> README.mdwn
+echo This is the initial README for the "$REPO" git repo. >> README.mdwn
 $GIT add ./README.mdwn
 $GIT commit -m "Added README.mdwn"
 
@@ -88,13 +88,13 @@ REMOTECMDS=`cat << EOF
     > $GITREMOTEDIR/$REPO/hooks/post-receive &&
     sudo chmod u+x $GITREMOTEDIR/$REPO/hooks/post-receive
 EOF`
-$SSH -t $GITSERVER "$REMOTECMDS"
+$SSH -t "$GITSERVER" "$REMOTECMDS"
 
 # Create the REPO on github:
-$CURL -u $GITHUBUSER https://api.github.com/user/repos -d "{\"name\":\"$REPO\"}"
+$CURL -u "$GITHUBUSER" https://api.github.com/user/repos -d "{\"name\":\"$REPO\"}"
 
 # Add the remote git repo as a git remote
-$GIT remote add origin ssh://$GITSERVER/$GITREMOTEDIR/$REPO
+$GIT remote add origin ssh://"$GITSERVER"/"$GITREMOTEDIR"/"$REPO"
 
 # Push to the new git repo
 $GIT push --set-upstream origin master
