@@ -1,4 +1,9 @@
 #!/bin/bash
+#
+# In certain circumstances, KVM console logs in OpenStack can grow rapidly and
+# easily fill your compute node disks. Run this script at a desirable interval
+# to ensure that the logs are kept to a reasonable length.
+
 set -eux
 set -o pipefail
 
