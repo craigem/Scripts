@@ -13,7 +13,7 @@ GREP=/bin/grep
 TAIL=/usr/bin/tail
 
 # Where are your console logs?
-CONSOLE_LOG_PATH=/tmp/instances
+CONSOLE_LOG_PATH=/var/lib/nova/instances
 
 # What size (in bytes) do you want to shrink the log file to?
 LOG_SIZE=100000
