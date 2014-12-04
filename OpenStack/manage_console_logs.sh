@@ -8,34 +8,64 @@ set -eux
 set -o pipefail
 
 # Where are your tools?
-FIND=/usr/bin/find
-GREP=/bin/grep
-TAIL=/usr/bin/tail
+readonly FIND=/usr/bin/find
+readonly GREP=/bin/grep
+readonly TAIL=/usr/bin/tail
+readonly FLOCK=/usr/bin/flock
+readonly WC=/usr/bin/wc
 
-# Where are your console logs?
-CONSOLE_LOG_PATH=/var/lib/nova/instances
+# Set the global variables:
+readonly SCRIPTNAME=$(basename "$0")
+readonly LOCKFILE_DIR=/var/lock
+readonly LOCK_FD=200
 
-# What size (in bytes) do you want to shrink the log file to?
-LOG_SIZE=100000
+# The locking function using flock to ensure the script is not running twice:
+lock() {
+    local prefix=$1
+    local fd=${2:-$LOCK_FD}
+    local lock_file=$LOCKFILE_DIR/$prefix.lock
 
-# What is the maximum size in bytes of the console logs that you'll tolerate?
-MAX_LOG_SIZE=1024000
+    # Create the lock file:
+    eval "exec $fd>$lock_file"
 
-# Get a list of directories that end with a UUID in the console log path:
-LIST_INSTANCE_DIRS=($($FIND $CONSOLE_LOG_PATH/* -maxdepth 0 -type d -printf "%f\n" | $GREP -E "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"))
+    # Acquire the lock:
+    $FLOCK -n $fd \
+        && return 0 \
+        || return 1
+}
 
-# for each console log that's over size, truncate it.
-for i in "${LIST_INSTANCE_DIRS[@]}"; do
-    # Get the actual size of the log file
-    ACTUAL_SIZE=$(wc -c $CONSOLE_LOG_PATH/$i/console.log | cut -f 1 -d ' ')
-    # If the log file is > the specified maximum, truncate it
-    if [ "$ACTUAL_SIZE" -gt $MAX_LOG_SIZE ]; then
-        echo "$i is $ACTUAL_SIZE, we're going to have to truncate this file."
-        echo "$($TAIL -c $LOG_SIZE $CONSOLE_LOG_PATH/$i/console.log)" > "$CONSOLE_LOG_PATH/$i/console.log"
-        echo "$i is now $ACTUAL_SIZE"
-    else
-        echo "%i is fine, we're leaving it alone."
-    fi
-done
+# This function checks each console log and truncates if required
+manage_logs() {
+    local console_log_path=/var/lib/nova/instances
+    local log_size=100000
+    local max_log_size=1024000
+    local list_instance_dirs=($($FIND $console_log_path/* -maxdepth 0 -type d -printf "%f\n" | $GREP -E "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"))
 
-exit 0
+    # for each console log that's over size, truncate it.
+    for i in "${list_instance_dirs[@]}"; do
+        local actual_size=$($WC -c $console_log_path/$i/console.log | cut -f 1 -d ' ')
+        if [ "$actual_size" -gt $max_log_size ]; then
+            echo "$i is $actual_size, we're going to have to truncate this file."
+            echo "$($TAIL -c $log_size $console_log_path/$i/console.log)" > "$console_log_path/$i/console.log"
+            echo "$i is now $actual_size"
+        else
+            echo "$i is fine, we're leaving it alone."
+        fi
+    done
+}
+
+myexit() {
+    local error_str="$@"
+
+    echo $error_str
+    exit 1
+}
+
+main() {
+    lock $SCRIPTNAME \
+      || myexit "Only one instance of $SCRIPTNAME can run at one time."
+
+    manage_logs
+}
+
+main
