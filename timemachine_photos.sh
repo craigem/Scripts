@@ -24,7 +24,8 @@ readonly LS=/bin/ls
 readonly AWK=/usr/bin/awk
 
 # What has the user given us?
-readonly DRIVE="/media/$1/Time Machine Backups"
+#readonly DRIVE="/media/$1/Time Machine Backups"
+readonly DRIVE="/media/$1"
 readonly USERNAME=$2
 readonly RECOVERY_DATE=$3
 readonly COPY_TO=$4
@@ -41,7 +42,11 @@ find_pictures() {
     local pictures_number="$($LS -lah "$pictures_path" | $AWK '{print $2}')"
     # Use it's number from the second column to locate the real Pictures data
     local real_pictures="$($SUDO $FIND "$DRIVE" -name dir_$pictures_number)"
-    $SUDO $LS "$real_pictures" | grep -i .jpg
+    local photos="$($SUDO $LS "$real_pictures" | grep -i .jpg)"
+    for i in "${photos}"; do
+        echo "$i"
+        PHOTO_ARRAY+=("$real_pictures"/"$i")
+    done
     # Copy any photos (JPEGs) from the root folder
     # Iterate through the files in the real picture folders
     #
@@ -49,6 +54,10 @@ find_pictures() {
 
 copy_pictures() {
     echo "Copy Pictures to $COPY_TO"
+    for i in "${PHOTO_ARRAY[@]}"; do
+        $SUDO cp "$i" $COPY_TO/
+        echo "$i"
+    done
 }
 
 check_pictures() {
