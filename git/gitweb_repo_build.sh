@@ -17,7 +17,7 @@
 set -eux
 set -o pipefail
 
-# Environmnet
+# Environment
 # Where are your tools?
 GIT=/usr/bin/git
 SSH=/usr/bin/ssh
@@ -45,7 +45,7 @@ cd "$GITDIR" && /bin/mkdir "$REPO" && cd "$GITDIR"/"$REPO"
 echo "Initialising the local repo:"
 $GIT init
 
-echo "Creating git descriptoin file."
+echo "Creating git description file."
 echo "$DESCRIPTION" > .git/description
 
 echo "Copying License:"
@@ -78,14 +78,14 @@ REMOTECMDS=`cat << EOF
     "    url = git@github.com:$GITHUBUSER/$REPO.git" \
     '    fetch = +refs/heads/*:refs/remotes/github/*' \
     '    autopush = true' \
-    > $GITREMOTEDIR/$REPO/config &&
+    >> $GITREMOTEDIR/$REPO/config &&
   echo "Adding the remote bitbucket repo" &&
   printf '%s\n %s\n %s\n %s\n' \
     '[remote "bitbucket"]' \
     "    url = git@bitbucket.org:$BITBUCKETUSER/$REPO.git" \
     '    fetch = +refs/heads/*:refs/remotes/bitbucket/*' \
     '    autopush = true' \
-    > $GITREMOTEDIR/$REPO/config &&
+    >> $GITREMOTEDIR/$REPO/config &&
   echo "Creating a post-receive hook." &&
   printf '%s\n %s\n %s\n %s\n %s\n %s\n' \
     '#!/bin/bash' \
