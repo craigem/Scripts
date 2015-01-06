@@ -14,7 +14,8 @@
 # * Pushes to remote.
 # * Checks remote and github are working correctly.
 
-set -eu
+set -eux
+set -o pipefail
 
 # Environmnet
 # Where are your tools?
@@ -26,10 +27,11 @@ CURL=/usr/bin/curl
 GITDIR=$GITDIR
 # Who is  your git user?
 GITHUBUSER=$1
+BITBUCKETUSER=$2
 # What is the repo name?
-REPO=$2
+REPO=$3
 # What is a description for this REPO?
-DESCRIPTION=$3
+DESCRIPTION=$4
 # Where is your remote git server?
 GITSERVER=$GITSERVER
 GITREMOTEDIR=$GITREMOTEDIR
@@ -77,6 +79,13 @@ REMOTECMDS=`cat << EOF
     '    fetch = +refs/heads/*:refs/remotes/github/*' \
     '    autopush = true' \
     > $GITREMOTEDIR/$REPO/config &&
+  echo "Adding the remote bitbucket repo" &&
+  printf '%s\n %s\n %s\n %s\n' \
+    '[remote "bitbucket"]' \
+    "    url = git@bitbucket.org:$BITBUCKETUSER/$REPO.git" \
+    '    fetch = +refs/heads/*:refs/remotes/bitbucket/*' \
+    '    autopush = true' \
+    > $GITREMOTEDIR/$REPO/config &&
   echo "Creating a post-receive hook." &&
   printf '%s\n %s\n %s\n %s\n %s\n %s\n' \
     '#!/bin/bash' \
@@ -92,6 +101,9 @@ $SSH -t "$GITSERVER" "$REMOTECMDS"
 
 # Create the REPO on github:
 $CURL -u "$GITHUBUSER" https://api.github.com/user/repos -d "{\"name\":\"$REPO\"}"
+
+# Create the REPO on Bitbucket:
+$CURL -k -X POST --user $BITBUCKETUSER "https://api.bitbucket.org/2.0/repositories/$BITBUCKETUSER/$REPO"
 
 # Add the remote git repo as a git remote
 $GIT remote add origin ssh://"$GITSERVER"/"$GITREMOTEDIR"/"$REPO"
