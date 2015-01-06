@@ -91,7 +91,7 @@ REMOTECMDS=`cat << EOF
     '#!/bin/bash' \
     'for remote in \\$(git remote); do' \
     '   if [ "\\$(git config "remote.\\${remote}.autopush")" = "true" ]; then' \
-    '      git push --set-upstream "\\$remote" master' \
+    '      git push --all "$remote" \
     '   fi' \
     'done' \
     > $GITREMOTEDIR/$REPO/hooks/post-receive &&
