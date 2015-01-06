@@ -6,7 +6,7 @@
 #
 # This script
 # * Builds git repo locally
-# * Adds a README.mdwn and a LICENCE. Commits the changes.
+# * Adds a README.md and a LICENCE. Commits the changes.
 # * Builds a git repo hosted via remote git server
 # * Adds a git hook for automatically pushing to github
 # * Adds a remote for github.
@@ -54,10 +54,10 @@ $GIT add ./LICENSE
 $GIT commit -m "Added LICENSE."
 
 echo "Adding README."
-echo # README for $REPO > README.mdwn
-echo This is the initial README for the "$REPO" git repo. >> README.mdwn
-$GIT add ./README.mdwn
-$GIT commit -m "Added README.mdwn"
+echo # README for $REPO > README.md
+echo This is the initial README for the "$REPO" git repo. >> README.md
+$GIT add ./README.md
+$GIT commit -m "Added README.md"
 
 echo "Creating repo on remote server."
 REMOTECMDS=`cat << EOF
