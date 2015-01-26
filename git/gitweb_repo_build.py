@@ -20,6 +20,7 @@ This script
 
 import ConfigParser
 import os
+import sys
 
 # Get HOME
 HOME = os.getenv('HOME')
@@ -35,10 +36,18 @@ GITREMOTEDIR = CONFIG.get("grb", "GITREMOTEDIR")
 LICENSE = CONFIG.get("grb", "LICENSE")
 
 # Get repo name and description for the CLI
+
 # REPO=$1
 # DESCRIPTION=$2
 
-# Builds git repo locally
+def localrepo():
+    '''Builds git repo locally'''
+    directory = GITDIR + "/" + sys.argv[1]
+    if not os.path.exists(directory):
+        print directory
+        os.makedirs(directory)
+
+
 # Adds a README.md and a LICENCE. Commits the changes.
 # Builds a git repo hosted via remote git server
 # Adds a git hook for automatically pushing to configured remotes.
@@ -48,3 +57,12 @@ LICENSE = CONFIG.get("grb", "LICENSE")
 # Creates a repo at bitbucket.
 # Pushes to remote.
 # Checks remote and github are working correctly.
+
+
+def main():
+    '''Run the main program'''
+    localrepo()
+
+
+main()
+
