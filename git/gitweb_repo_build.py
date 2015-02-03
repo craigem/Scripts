@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 '''
 USE CASE:
 You have a local git repo that you wish to push to both your own git server,
@@ -24,7 +25,7 @@ import sys
 
 # Get HOME
 HOME = os.getenv('HOME')
-RCFILE = HOME + "/.gitweb_repo_build.rc"
+RCFILE = ("%s/.gitweb_repo_build.rc" % HOME)
 # Read the variables from the local config file
 CONFIG = ConfigParser.ConfigParser()
 CONFIG.read(RCFILE)
@@ -36,17 +37,21 @@ GITREMOTEDIR = CONFIG.get("grb", "GITREMOTEDIR")
 LICENSE = CONFIG.get("grb", "LICENSE")
 
 # Get repo name and description for the CLI
-
-# REPO=$1
 # DESCRIPTION=$2
 
-def localrepo():
+def localdir():
     '''Builds git repo locally'''
     directory = GITDIR + "/" + sys.argv[1]
-    if not os.path.exists(directory):
-        print directory
+    if not  os.path.exists(directory):
         os.makedirs(directory)
+        if os.path.exists(directory):
+            print "Directory %s has been created successfully." % directory
+    else:
+        print "Directory %s already exists" % directory
 
+def localrepo():
+    '''Builds the local git repo.'''
+    print "Local repo"
 
 # Adds a README.md and a LICENCE. Commits the changes.
 # Builds a git repo hosted via remote git server
@@ -61,6 +66,7 @@ def localrepo():
 
 def main():
     '''Run the main program'''
+    localdir()
     localrepo()
 
 
