@@ -24,6 +24,8 @@ import os
 import sys
 from git import Repo
 from shutil import copyfile
+from  paramiko import client
+from  paramiko import AutoAddPolicy
 
 # Get HOME
 HOME = os.getenv('HOME')
@@ -79,7 +81,17 @@ def localrepo():
     else:
         print "Directory %s already exists" % REPODIR
 
-# Builds a git repo hosted via remote git server
+def remoterepo():
+    '''Builds a git repo hosted via remote git server'''
+    print "Remote Repo"
+    sshclient = client.SSHClient()
+    sshclient.load_system_host_keys()
+    sshclient.set_missing_host_key_policy(AutoAddPolicy())
+    sshclient.connect(GITSERVER)
+    stdin, stdout, stderr = sshclient.exec_command('hostname')
+    print stdin
+
+
 # Adds a remote git hook for automatically pushing to configured remotes.
 # Adds a remote for github.
 # Adds a remote for bitbucket.
@@ -92,6 +104,7 @@ def localrepo():
 def main():
     '''Run the main program'''
     localrepo()
+    remoterepo()
 
 
 main()
