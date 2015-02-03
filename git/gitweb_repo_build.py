@@ -38,13 +38,11 @@ BITBUCKETUSER = CONFIG.get("grb", "BITBUCKETUSER")
 GITSERVER = CONFIG.get("grb", "GITSERVER")
 GITREMOTEDIR = CONFIG.get("grb", "GITREMOTEDIR")
 LICENSE = CONFIG.get("grb", "LICENSE")
-
 # Set the repo directory:
 REPONAME = sys.argv[1]
 REPODIR = GITDIR + "/" + REPONAME
-
-# Get repo name and description for the CLI
-# DESCRIPTION=$2
+# Set the repo description
+DESCRIPTION = sys.argv[2]
 
 
 def localrepo():
@@ -52,6 +50,11 @@ def localrepo():
     if not os.path.exists(REPODIR):
         # Initialise the repo
         Repo.init(REPODIR)
+
+        # Add the descpription
+        description = "%s/.git/description" % REPODIR
+        with open(description, "w") as text_file:
+            text_file.write(DESCRIPTION)
 
         # Add the LICENSE file
         dst = "%s/LICENSE" % REPODIR
