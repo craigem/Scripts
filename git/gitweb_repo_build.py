@@ -83,13 +83,15 @@ def localrepo():
 
 def remoterepo():
     '''Builds a git repo hosted via remote git server'''
-    print "Remote Repo"
     sshclient = client.SSHClient()
     sshclient.load_system_host_keys()
     sshclient.set_missing_host_key_policy(AutoAddPolicy())
     sshclient.connect(GITSERVER)
-    stdin, stdout, stderr = sshclient.exec_command('hostname')
-    print stdin
+    print "Creating %s on %s" % (REPONAME, GITSERVER)
+    sshclient.exec_command('mkdir /var/lib/git/%s' % REPONAME)
+    sshclient.exec_command('git init --bare /var/lib/git/%s' % REPONAME)
+    sshclient.exec_command(
+        'echo %s > /var/lib/git/%s/description' % (DESCRIPTION, REPONAME))
 
 
 # Adds a remote git hook for automatically pushing to configured remotes.
