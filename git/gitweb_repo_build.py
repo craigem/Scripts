@@ -58,6 +58,13 @@ REMOTES = dedent("""
     url = git@bitbucket.org:%s/%s.git
     fetch = +refs/heads/*:refs/remotes/bitbucket/* """
     % (GITHUBUSER, REPONAME, BITBUCKETUSER, REPONAME))
+HOOK = dedent("""
+    #!/bin/bash
+    for remote in $(git remote); do
+        if [ "$(git config "remote.${remote}.autopush")" = "true" ]; then
+            git push --all "$remote"
+        fi
+    done""")
 
 def localrepo():
     ''' Creates and initialises the git repoa.'''
@@ -104,13 +111,17 @@ def remoterepo():
     sshclient.exec_command('git init --bare %s/%s' % (GITREMOTEDIR, REPONAME))
     sshclient.exec_command(
         'echo %s > %s/%s/description' % (DESCRIPTION, GITREMOTEDIR, REPONAME))
+    # Adds a remote for github and bitbucket.
     sshclient.exec_command(
         'echo -e %s >> %s/%s/config' % (commands.mkarg(REMOTES), GITREMOTEDIR, REPONAME))
+    # Adds a remote git hook for automatically pushing to configured remotes.
+    sshclient.exec_command(
+        'echo -e %s >> %s/%s/hooks/post-receive' % (commands.mkarg(HOOK), GITREMOTEDIR, REPONAME))
+    sshclient.exec_command(
+        'chmod u+x %s/%s/hooks/post-receive' % (
+    GITREMOTEDIR, REPONAME))
 
 
-# Adds a remote git hook for automatically pushing to configured remotes.
-# Adds a remote for github.
-# Adds a remote for bitbucket.
 # Creates a repo at GitHub.
 # Creates a repo at bitbucket.
 # Pushes to remote.
