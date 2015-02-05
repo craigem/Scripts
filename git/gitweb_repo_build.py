@@ -26,6 +26,8 @@ from git import Repo
 from shutil import copyfile
 from  paramiko import client
 from  paramiko import AutoAddPolicy
+from textwrap import dedent
+import commands
 
 # Get HOME
 HOME = os.getenv('HOME')
@@ -45,7 +47,17 @@ REPONAME = sys.argv[1]
 REPODIR = GITDIR + "/" + REPONAME
 # Set the repo description
 DESCRIPTION = sys.argv[2]
+# Set the remote values
+REMOTES = dedent("""
+    [remote "github"]
+    url = git@github.com:%s/%s.git
+    fetch = +refs/heads/*:refs/remotes/github/*
+    autopush = true
 
+    [remote "bitbucket"]
+    url = git@bitbucket.org:%s/%s.git
+    fetch = +refs/heads/*:refs/remotes/bitbucket/* """
+    % (GITHUBUSER, REPONAME, BITBUCKETUSER, REPONAME))
 
 def localrepo():
     ''' Creates and initialises the git repoa.'''
@@ -53,7 +65,7 @@ def localrepo():
         # Initialise the repo
         Repo.init(REPODIR)
 
-        # Add the descpription
+        # Add the description
         description = "%s/.git/description" % REPODIR
         with open(description, "w") as text_file:
             text_file.write(DESCRIPTION)
@@ -88,10 +100,12 @@ def remoterepo():
     sshclient.set_missing_host_key_policy(AutoAddPolicy())
     sshclient.connect(GITSERVER)
     print "Creating %s on %s" % (REPONAME, GITSERVER)
-    sshclient.exec_command('mkdir /var/lib/git/%s' % REPONAME)
-    sshclient.exec_command('git init --bare /var/lib/git/%s' % REPONAME)
+    sshclient.exec_command('mkdir %s/%s' % (GITREMOTEDIR, REPONAME))
+    sshclient.exec_command('git init --bare %s/%s' % (GITREMOTEDIR, REPONAME))
     sshclient.exec_command(
-        'echo %s > /var/lib/git/%s/description' % (DESCRIPTION, REPONAME))
+        'echo %s > %s/%s/description' % (DESCRIPTION, GITREMOTEDIR, REPONAME))
+    sshclient.exec_command(
+        'echo -e %s >> %s/%s/config' % (commands.mkarg(REMOTES), GITREMOTEDIR, REPONAME))
 
 
 # Adds a remote git hook for automatically pushing to configured remotes.
