@@ -28,6 +28,7 @@ from  paramiko import client
 from  paramiko import AutoAddPolicy
 from textwrap import dedent
 import commands
+import requests
 
 # Get HOME
 HOME = os.getenv('HOME')
@@ -56,8 +57,8 @@ REMOTES = dedent("""
 
     [remote "bitbucket"]
     url = git@bitbucket.org:%s/%s.git
-    fetch = +refs/heads/*:refs/remotes/bitbucket/* """
-    % (GITHUBUSER, REPONAME, BITBUCKETUSER, REPONAME))
+    fetch = +refs/heads/*:refs/remotes/bitbucket/* """ % (
+        GITHUBUSER, REPONAME, BITBUCKETUSER, REPONAME))
 HOOK = dedent("""
     #!/bin/bash
     for remote in $(git remote); do
@@ -102,6 +103,7 @@ def localrepo():
 
 def remoterepo():
     '''Builds a git repo hosted via remote git server'''
+    # Throw in an if exists here as per localrepe
     sshclient = client.SSHClient()
     sshclient.load_system_host_keys()
     sshclient.set_missing_host_key_policy(AutoAddPolicy())
@@ -119,7 +121,7 @@ def remoterepo():
         'echo -e %s >> %s/%s/hooks/post-receive' % (commands.mkarg(HOOK), GITREMOTEDIR, REPONAME))
     sshclient.exec_command(
         'chmod u+x %s/%s/hooks/post-receive' % (
-    GITREMOTEDIR, REPONAME))
+            GITREMOTEDIR, REPONAME))
 
 
 def socialrepos():
