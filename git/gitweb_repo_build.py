@@ -122,8 +122,13 @@ def remoterepo():
     GITREMOTEDIR, REPONAME))
 
 
-# Creates a repo at GitHub.
-# Creates a repo at bitbucket.
+def socialrepos():
+    '''Creates a repo at Github and Bitbucket.'''
+    print "Social Repos"
+
+
+# $CURL -u "$GITHUBUSER" https://api.github.com/user/repos -d "{\"name\":\"$REPO\"}"
+
 # Pushes to remote.
 # Checks remote and github are working correctly.
 
@@ -132,6 +137,7 @@ def main():
     '''Run the main program'''
     localrepo()
     remoterepo()
+    socialrepos()
 
 
 main()
