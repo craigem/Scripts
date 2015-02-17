@@ -25,10 +25,12 @@ import sys
 from git import Repo
 from shutil import copyfile
 from  paramiko import client
+from  paramiko import sftp_file
 from  paramiko import AutoAddPolicy
 from textwrap import dedent
 import commands
 import requests
+import json
 
 # Get HOME
 HOME = os.getenv('HOME')
@@ -67,6 +69,7 @@ HOOK = dedent("""
         fi
     done""")
 
+
 def localrepo():
     ''' Creates and initialises the git repoa.'''
     if not os.path.exists(REPODIR):
@@ -101,13 +104,28 @@ def localrepo():
     else:
         print "Directory %s already exists" % REPODIR
 
+
+def rexists(sftp, path):
+    """os.path.exists for paramiko's SCP object."""
+    try:
+        sftp.stat(path)
+    except IOError, e:
+        if e.errno == errno.ENOENT:
+            return False
+        raise
+    else:
+        return True
+
+
 def remoterepo():
     '''Builds a git repo hosted via remote git server'''
-    # Throw in an if exists here as per localrepe
+    # Throw in an if exists here as per localrepo
     sshclient = client.SSHClient()
+    #sftpclient = sftp_file.SFTPFile(sftp, handle, mode='r', bufsize=-1)
     sshclient.load_system_host_keys()
     sshclient.set_missing_host_key_policy(AutoAddPolicy())
     sshclient.connect(GITSERVER)
+    #rexists(sftpclient, "%s/%s" % (GITREMOTEDIR, REPONAME))
     print "Creating %s on %s" % (REPONAME, GITSERVER)
     sshclient.exec_command('mkdir %s/%s' % (GITREMOTEDIR, REPONAME))
     sshclient.exec_command('git init --bare %s/%s' % (GITREMOTEDIR, REPONAME))
@@ -126,10 +144,17 @@ def remoterepo():
 
 def socialrepos():
     '''Creates a repo at Github and Bitbucket.'''
-    print "Social Repos"
+    print "Creating the repo at Github"
+    payload = json.dumps({'name': REPONAME, 'description': DESCRIPTION})
+    req = requests.post(
+        'https://api.github.com/user/repos', payload)
 
+    print "Creating the repo at Bitbucket"
+    payload = json.dumps({"description": "%s" % DESCRIPTION})
+    req = requests.post(
+        'https://api.bitbucket.org/2.0/repositories/craigemcw/%s' % REPONAME, payload)
+    # Description not working for Bitbucket...
 
-# $CURL -u "$GITHUBUSER" https://api.github.com/user/repos -d "{\"name\":\"$REPO\"}"
 
 # Pushes to remote.
 # Checks remote and github are working correctly.
