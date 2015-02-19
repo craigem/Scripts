@@ -24,9 +24,9 @@ import os
 import sys
 from git import Repo
 from shutil import copyfile
-from  paramiko import client
-from  paramiko import sftp_file
-from  paramiko import AutoAddPolicy
+from paramiko import client
+from paramiko import sftp_file
+from paramiko import AutoAddPolicy
 from textwrap import dedent
 import commands
 import requests
@@ -109,8 +109,8 @@ def rexists(sftp, path):
     """os.path.exists for paramiko's SCP object."""
     try:
         sftp.stat(path)
-    except IOError, e:
-        if e.errno == errno.ENOENT:
+    except IOError, error:
+        if error.errno == errno.ENOENT:
             return False
         raise
     else:
@@ -121,11 +121,11 @@ def remoterepo():
     '''Builds a git repo hosted via remote git server'''
     # Throw in an if exists here as per localrepo
     sshclient = client.SSHClient()
-    #sftpclient = sftp_file.SFTPFile(sftp, handle, mode='r', bufsize=-1)
+    # sftpclient = sftp_file.SFTPFile(sftp, handle, mode='r', bufsize=-1)
     sshclient.load_system_host_keys()
     sshclient.set_missing_host_key_policy(AutoAddPolicy())
     sshclient.connect(GITSERVER)
-    #rexists(sftpclient, "%s/%s" % (GITREMOTEDIR, REPONAME))
+    # rexists(sftpclient, "%s/%s" % (GITREMOTEDIR, REPONAME))
     print "Creating %s on %s" % (REPONAME, GITSERVER)
     sshclient.exec_command('mkdir %s/%s' % (GITREMOTEDIR, REPONAME))
     sshclient.exec_command('git init --bare %s/%s' % (GITREMOTEDIR, REPONAME))
@@ -133,10 +133,12 @@ def remoterepo():
         'echo %s > %s/%s/description' % (DESCRIPTION, GITREMOTEDIR, REPONAME))
     # Adds a remote for github and bitbucket.
     sshclient.exec_command(
-        'echo -e %s >> %s/%s/config' % (commands.mkarg(REMOTES), GITREMOTEDIR, REPONAME))
+        'echo -e %s >> %s/%s/config' % (
+            commands.mkarg(REMOTES), GITREMOTEDIR, REPONAME))
     # Adds a remote git hook for automatically pushing to configured remotes.
     sshclient.exec_command(
-        'echo -e %s >> %s/%s/hooks/post-receive' % (commands.mkarg(HOOK), GITREMOTEDIR, REPONAME))
+        'echo -e %s >> %s/%s/hooks/post-receive' % (
+            commands.mkarg(HOOK), GITREMOTEDIR, REPONAME))
     sshclient.exec_command(
         'chmod u+x %s/%s/hooks/post-receive' % (
             GITREMOTEDIR, REPONAME))
@@ -148,11 +150,11 @@ def socialrepos():
     payload = json.dumps({'name': REPONAME, 'description': DESCRIPTION})
     req = requests.post(
         'https://api.github.com/user/repos', payload)
-
     print "Creating the repo at Bitbucket"
     payload = json.dumps({"description": "%s" % DESCRIPTION})
     req = requests.post(
-        'https://api.bitbucket.org/2.0/repositories/craigemcw/%s' % REPONAME, payload)
+        'https://api.bitbucket.org/2.0/repositories/craigemcw/%s' %
+        REPONAME, payload)
     # Description not working for Bitbucket...
 
 
