@@ -5,7 +5,7 @@ You have a local git repo that you wish to push to both your own git server,
 github and bitbucket.
 
 This script
-* Reads your local config file
+* Reads your local ~/.netrc
 * Gets repo name and description from arguments
 * Builds git repo locally
 * Adds a README.md and a LICENCE. Commits the changes.
@@ -98,8 +98,11 @@ def localrepo():
         repo.index.commit("Added README.")
 
         # Adds the remote git repo as origin
-        remoteurl = "%s:/%s.git" % (GITSERVER, REPONAME)
+        remoteurl = "ssh://%s/%s.git" % (GITSERVER, REPONAME)
         repo.create_remote('origin', remoteurl)
+
+        # Push the initial content
+        repo.remotes.origin.push()
 
     else:
         print "Directory %s already exists" % REPODIR
@@ -164,9 +167,9 @@ def socialrepos():
 
 def main():
     '''Run the main program'''
-    localrepo()
     remoterepo()
     socialrepos()
+    localrepo()
 
 
 main()
