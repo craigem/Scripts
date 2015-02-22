@@ -59,7 +59,8 @@ REMOTES = dedent("""
 
     [remote "bitbucket"]
     url = git@bitbucket.org:%s/%s.git
-    fetch = +refs/heads/*:refs/remotes/bitbucket/* """ % (
+    fetch = +refs/heads/*:refs/remotes/bitbucket/*
+    autopush = true""" % (
         GITHUBUSER, REPONAME, BITBUCKETUSER, REPONAME))
 HOOK = dedent("""
     #!/bin/bash
@@ -98,7 +99,7 @@ def localrepo():
         repo.index.commit("Added README.")
 
         # Adds the remote git repo as origin
-        remoteurl = "ssh://%s/%s.git" % (GITSERVER, REPONAME)
+        remoteurl = "ssh://%s%s/%s" % (GITSERVER, GITREMOTEDIR, REPONAME)
         repo.create_remote('origin', remoteurl)
 
         # Push the initial content
