@@ -23,6 +23,7 @@ import ConfigParser
 import os
 import sys
 from git import Repo
+from git import Remote
 from shutil import copyfile
 from paramiko import client
 from paramiko import sftp_file
@@ -103,7 +104,9 @@ def localrepo():
         repo.create_remote('origin', remoteurl)
 
         # Push the initial content
-        repo.remotes.origin.push()
+        print "Pushing the initial content."
+        origin = repo.remotes.origin
+        origin.push("--all")
 
     else:
         print "Directory %s already exists" % REPODIR
@@ -162,9 +165,7 @@ def socialrepos():
     # Description not working for Bitbucket...
 
 
-# Pushes to remote.
 # Checks remote and github are working correctly.
-
 
 def main():
     '''Run the main program'''
