@@ -160,8 +160,8 @@ def socialrepos():
     print "Creating the repo at Bitbucket"
     payload = json.dumps({"description": "%s" % DESCRIPTION})
     req = requests.post(
-        'https://api.bitbucket.org/2.0/repositories/craigemcw/%s' %
-        REPONAME, payload)
+        'https://api.bitbucket.org/2.0/repositories/%s/%s' %
+        (BITBUCKETUSER, REPONAME), payload)
     # Description not working for Bitbucket...
 
 
