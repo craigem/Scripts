@@ -23,7 +23,6 @@ import ConfigParser
 import os
 import sys
 from git import Repo
-from git import Remote
 from shutil import copyfile
 from paramiko import client
 from paramiko import sftp_file
