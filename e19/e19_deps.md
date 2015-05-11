@@ -7,7 +7,7 @@ libfribidi-dev
 libharfbuzz-dev
 libgles2-mesa-dev
 libpng12-dev
-libjpeg8-dev
+libjpeg62-turbo-dev
 libtiff5-dev
 libgif-dev
 librsvg2-dev
@@ -35,7 +35,7 @@ libasound2-dev
 libpoppler-dev
 libraw-dev
 libgstreamer1.0-dev
-libgstreamer-plugins-base1.0-dev 
+libgstreamer-plugins-base1.0-dev
 libxine2-dev
 libvlc-dev
 libluajit-5.1-dev
