@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/run/current-system/sw/bin/bash
 #
 # This script will allow you to play podcasts from gPodder on mpd
 
